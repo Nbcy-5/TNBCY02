@@ -1,0 +1,33 @@
+TNBCY - NOTES FOR FUTURE DEVELOPMENT (written at v23)
+=====================================================
+GOAL: real-looking Indian railway game. Phone can take a 10 GB install IF there is no lag. Rule: size on disk is free, frame time is not.
+
+1. BUDGET (keep for every new asset)
+ - Target 60 fps on the phone (30 fps minimum). Keep the GL Compatibility renderer.
+ - Install size up to about 10 GB is fine: the cost is draw calls, triangles on screen and texture memory, not disk.
+ - Textures: ASTC compression (already enabled). 1K-2K per material, 4K only for hero objects (cab, loco front). Keep GPU texture memory under about 1.5 GB.
+ - Geometry: use MultiMesh for anything repeated (sleepers, masts, fences, benches). Chunk long meshes (about 180-300 m) and set Far() ranges so distant chunks vanish.
+ - Never load all stations at once: stream each station scene when the train is within about 2 km and free it after.
+ - Add 2-3 LOD levels to every loco/coach/station model (full, 50 %, 15 %).
+
+2. WHAT v23 CHANGED (all in code, no new image files)
+ - MainTrackV23.cs: ballast colour bands, mud-cement formation, joint smoothing (RTFixJoints), 25 kV overhead line (RTBuildOHE), sleeper spacing RTSleeperSpacing.
+ - MainSecunderabad.cs: Secunderabad platforms, shelters, benches, lights, number boards, foot-over-bridge, ramps.
+ - MainRealTrack.cs: granite texture recoloured (cement grey, mud, grease), sleepers evenly spaced.
+ - MainWorld.cs BuildStations: Secunderabad uses the new builder; other stations are unchanged (plain platforms).
+
+3. KNOWN LIMITS / TO DO NEXT
+ - Points (turnouts) and crossings: geometry unchanged from v19-v22 except even sleeper spacing and joint smoothing. Needs a close look on the phone at every switch.
+ - Only 2 platforms at Secunderabad (the route has 2 lines). Real SC has about 10 platforms: add more lines to Data/network_demo.json first, then platforms.
+ - Overhead line: no portal gantries, no section insulators, no neutral sections, no feeder/return wires, no mast numbers. Add them at stations and every 25 km.
+ - Platform: tactile studs are a shader pattern (no height), no passengers, no vendors, no stalls, no clocks, no CCTV, no escalator, no lift.
+ - Ballast: texture only. For real stones add a displacement/parallax or scatter 3D stones near the camera (within 15 m) with MultiMesh.
+ - Rails: no rail corrosion variation, no fastening detail beyond clip and pad, no rail welds. Joints are only in the yard loops.
+ - Reference photos for the overhead line were not received: compare MainTrackV23.cs RTMakeMast with them and adjust heights (OheContact, OheMess, OheSag, OheStagger).
+ - Night: station lights are emissive only (no real light sources). Add a few OmniLight3D near the player only.
+ - Other stations (Moula Ali, Charlapalli, Ghatkesar): copy MainSecunderabad.cs, change RTIsSec(), sizes and signs.
+
+4. HOW TO TEST QUICKLY
+ - Fly the camera along platform 1 (down line) at 0-40 km/h and look at: platform edge to train gap, shelter roof vs masts, FOB stairs, ballast colour, mud strip.
+ - Watch the 22 joints (node ids D900, D1200 ... U7100) for gaps in ballast or wires.
+ - If frame rate drops: lower Far() ranges in RTBuildOHE (750 m) and RTFormation (1200 m), or raise RTSleeperSpacing.
