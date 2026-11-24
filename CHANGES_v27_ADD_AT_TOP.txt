@@ -1,0 +1,6 @@
+[v27] Front-end fix: the home menu was drawn shifted off the screen
+ FIX  Home, route, train and settings screens were drawn at zero size: the menu was cut off at the left edge and the sky / railway backdrop did not show (plain grey).
+ FIX  Cause: FrontEnd.Setup called SetAnchorsPreset(FullRect) after the screen was already in the scene, which keeps the current (0 x 0) size. Now SetAnchorsAndOffsetsPreset(FullRect) in Setup and in Screen().
+ NOT DONE  Not compiled or run here. Check the home screen on the phone. If the build fails send the last 20 lines with "error CS".
+ Android version 3.6 (code 27).
+
